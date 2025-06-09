@@ -478,6 +478,9 @@ OPTIONS (username 'ot_user', password '1');
 Перезагружаю контейнер, пробую создать подключиться к тестовой базе MS SQL сервера
 ![](Pasted_image_20250607222513.png)
 
+![image](https://github.com/user-attachments/assets/8dbc857a-ec14-4722-aa00-5e26da37c87d)
+
+
 #### Создание внешних таблиц
  
 ```sql
@@ -760,7 +763,9 @@ OPTIONS (
 Для удобства редактирования скриптов продолжаю работать в pgAdmin
 Скрин с Foreign Data Wrapper - 
 ![](Pasted_image_20250608140440.png)
+
 Созданные внешние таблицы:
+
 ![](Pasted_image_20250608140533.png)
 
 Смотрю что колличество данных в foreign table соответствует таблицам MS SQL
