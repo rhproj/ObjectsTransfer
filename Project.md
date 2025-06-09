@@ -362,9 +362,13 @@ migrationBuilder.CreateTable(
 вот пример таблицы базы сервиса  **OT_Order**:
 ![](OrderHeadersEF.jpg)
 Сохраняется инкрементальное увеличение в записи поля Id, меняются типы, например
+
 **nvarchar(max)** стал типом **text**,
+
 **float**  - типом  **double precision**
+
 **datetime2**  - типом **timestamp with time zone**
+
 Все сопоставления типов MS SQL и Postrges можно посмотреть тут: https://www.sqlines.com/sql-server-to-postgresql#data-types
 
 C существующими фалами настроек получаются как и ожидолось объекты в PascalCase, 
