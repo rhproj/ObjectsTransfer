@@ -53,6 +53,7 @@ Ocelot в качестве Getaway
 
 ### Базы данных
 - У каждого сервиса своя отдельная база на Microsoft SQL Server.
+
 ![](Pasted_image_20250607215518.png)
 
 Схема OT_Auth
