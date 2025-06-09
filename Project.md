@@ -27,7 +27,7 @@
 ## Структура микросервисного приложения, и баз данных
 Для общей картины, представлю схему микросервисной архитектуры вэб приложение онлайн магазина:
 
-![[Pasted image 20250607211924.png | 1000]]
+![](Pasted_image_20250607211924.png)
 
 Одно из приемуществ микросервисной архитектуры - каждый сервис можно переключить по отдельности, причем часть сервисов, если есть на то необходимость может продолжать работать на MS SQL.
 
@@ -53,13 +53,13 @@ Ocelot в качестве Getaway
 
 ### Базы данных
 - У каждого сервиса своя отдельная база на Microsoft SQL Server.
-![[Pasted image 20250607215518.png | 200]]
+![](Pasted_image_20250607215518.png)
 
 Схема OT_Auth
-![[Pasted image 20250608102555.png | 700]]
+![](Pasted_image_20250608102555.png)
 
 Схема OT_Product
-![[Pasted image 20250608102536.png | 1000]]
+![](Pasted_image_20250608102536.png)
 
 Для примера миграции баз, буду использовать в основном 2 этих сервиса. Остальные базы сервисов мигрировались по аналогии.
 
@@ -110,7 +110,7 @@ ORDER BY  t.name
 | Tags                  |     300 |      0 |
 
 
-![[Pasted image 20250608132612.png]]
+![](Pasted_image_20250608132612.png)
 
 #### База OT_Auth 
 Размер базы OT_Auth в MS SQL
@@ -151,7 +151,7 @@ ORDER BY  t.name
 | AspNetUsers           | 100000 |     97 |
 | AspNetUserTokens      |  10000 |      2 |
 
-![[Pasted image 20250608131204.png]]
+![](Pasted_image_20250608131204.png)
 
 
 ## Развертывание PostgreSQL в Docker контейнере.
@@ -202,11 +202,11 @@ Type "help" for help.                                                           
 
 До этого сервисы работают с EF провайдером для общения с сервером MS SQL используя пакеты типа Microsoft.EntityFrameworkCore.SqlServer, 
 чтобы поменять провайдер на работающий с Postgres, первым делом необходимо уставить nuget пакеты Npgsql и Npgsql.EntityFrameworkCore.PostgreSQL, поменяю их в проекте каждого сервиса:
-![[Pasted image 20250608213931.png]]
+![](Pasted_image_20250608213931.png)
 Теперь можно указать его при добавлении контекста источника данных сервиса, вместо использумого с MS SQL:
-![[Pasted image 20250608214204.png]]
+![](Pasted_image_20250608214204.png)
 Далее меняю строку подключения, указывая адрес PostgreSQL развернутого в Docker контейнере (про это будет ниже).
-![[Pasted image 20250608214515.png]]
+![](Pasted_image_20250608214515.png)
 И так будет сделоно для каждого сервиса - указаны их базы.
 
 После того как все необходимые nuget-пакеты установленны, файлы конфигурации на основе которых по моделям строятся структуры таблиц можно не трогать, они в целом работают универсально, и при помощи нового провайдера Npgsql будут просто сгенерированны под особенности Postgres
@@ -280,7 +280,7 @@ protected override void Up(MigrationBuilder migrationBuilder)
 ```
 
 При этом существующие фалы EF-миграций под MS SQL сначало удалил и пересоздал новые под Postgres:
-![[Pasted image 20250609123246.png]]
+![](Pasted_image_20250609123246.png)
 Коротко о файлах EF-миграций:
 - **`20250531191315_PostgesInitial.cs`**  основной файл миграции - инструкциями "что нужно сделать с базой"
         - Содержит `Up()` - команды для применения миграции (создание таблиц, полей)
@@ -353,7 +353,7 @@ migrationBuilder.CreateTable(
 
 т.е Они будут отличаться на особенности описания типов, используемых провайдером Npgsql в отличаи от MS SQL
 вот пример таблицы базы сервиса  **OT_Order**:
-![[OrderHeaders 2 EF Migration.jpg]]
+![](OrderHeadersEF.jpg)
 Сохраняется инкрементальное увеличение в записи поля Id, меняются типы, например
 **nvarchar(max)** стал типом **text**,
 **float**  - типом  **double precision**
@@ -362,16 +362,16 @@ migrationBuilder.CreateTable(
 
 C существующими фалами настроек получаются как и ожидолось объекты в PascalCase, 
 
-![[Pasted image 20250608185019.png | 800]]
+![](Pasted_image_20250608185019.png)
 например по умолчанию, таблицы OT_Auth будут называться после выполнения миграций AspNetRoles, AspNetUsers
-![[Pasted image 20250608193615.png | 300]]
+![](Pasted_image_20250608193615.png)
 
 Есть 2 выхода решения проблемы несоответствия стилей по наименованию объектов между MS SQL и PostgeSQL:
 -  Явно прописывать в настройках конфигурации Entity Framework
-![[Pasted image 20250608181024.png]]
+![](Pasted_image_20250608181024.png)
  - Или я вот ещё нашел вот этот полезны Nuget-пакет **EFCore.NamingConventions**  https://github.com/efcore/EFCore.NamingConventions , которая решает проблему и автоматически приводит всё в любой указаный формат, актуально если очень много конфигураций таблиц уже описанно руками в конвенциях других баз.
 Просто добавляется при добавлении провайдера
-![[Pasted image 20250608180600.png | 900]]
+![](Pasted_image_20250608180600.png)
 поддерживает самые разные кейсы, например:
 - UseSnakeCaseNamingConvention: `FullName` becomes `full_name`
 - UseLowerCaseNamingConvention: `FullName` becomes `fullname`
@@ -380,16 +380,16 @@ C существующими фалами настроек получаются 
 - UseUpperSnakeCaseNamingConvention: `FullName` becomes `FULL_NAME`
 
 Соответственно c использованием .UseSnakeCaseNamingConvention, после пересоздания файла EF-миграций получаю: названия таблиц asp_net_roles, asp_net_users...
-![[Pasted image 20250608184355.png | 1000]]
+![](Pasted_image_20250608184355.png)
 единственное что, именно с объектасми  .Net Identity название ключей начинались c FK, а индексов IX - их пришлось привести в нижний регистр вручную
 
-![[Pasted image 20250608185712.png | 350]]
+![](Pasted_image_20250608185712.png)
 Выходят в итоге после выполнения EF-миграций.
 - Ну и всегда можно оставить такой же стиль который используется в MS SQL просто придется кавычить каждый объект в запросе
 
 
 EF-Миграции для создания структуры базы выполняются специальными командами пакета Microsoft.EntityFrameworkCore.Tools
-![[Pasted image 20250608214920.png | 1200]]
+![](Pasted_image_20250608214920.png)
 
 
 Одним из подходов переноса данных средствами EF являетсе, например перенос данных-справочников, которые опредиляются единоразово и редко меняются - их можно сидировать при выполнении накатки схем на базу с добавлением опций **.HasData**. Здесь я такой не рассматриваю, как и перенос средствами ETL и использование 2ух контекстов, потому что хочу проверить работу именно инструментов и расширений PostgreSQL о чем дальше и пойдет речь.
@@ -432,9 +432,9 @@ docker restart pg17
 Перезагрузил контейнер, чтобы изменения вступили в силу. 
 
 Причем, когда пробовал воодить руками вот этот вариант не работает
-![[Pasted image 20250608175538.png | 500]]
+![](Pasted_image_20250608175538.png)
 Надо именно , чтобы расширения были перечислены так: 
-![[Pasted image 20250608175605.png | 800]]
+![](Pasted_image_20250608175605.png)
 
 ### OT_Product
 ```sql
@@ -453,7 +453,7 @@ OPTIONS (servername 'host.docker.internal', port '1433', database 'OT_Product');
 Создал сервер внешних данных, указывая параметры подключения к MS SQL и целевую базу OT_Product
 
 В MS SQL в Security > Login создал пользователя ot_user  для переноса данных для всех баз сервисов
-![[Pasted image 20250608141908.png]]
+![](Pasted_image_20250608141908.png)
 
 ```sql
 CREATE USER MAPPING FOR postgres
@@ -463,9 +463,9 @@ OPTIONS (username 'ot_user', password '1');
 В Posgrtes cоздал пользовательское сопоставление.
 
 ###### Скрины скачивания, установки и настройки tds_fdw в Docker
-![[Pasted image 20250607222450.png | 1000]]
+![](Pasted_image_20250607222450.png)
 Перезагружаю контейнер, пробую создать подключиться к тестовой базе MS SQL сервера
-![[Pasted image 20250607222513.png | 1000]]
+![](Pasted_image_20250607222513.png)
 
 #### Создание внешних таблиц
  
@@ -748,9 +748,9 @@ OPTIONS (
 
 Для удобства редактирования скриптов продолжаю работать в pgAdmin
 Скрин с Foreign Data Wrapper - 
-![[Pasted image 20250608140440.png | 400]]
+![](Pasted_image_20250608140440.png)
 Созданные внешние таблицы:
-![[Pasted image 20250608140533.png | 400]]
+![](Pasted_image_20250608140533.png)
 
 Смотрю что колличество данных в foreign table соответствует таблицам MS SQL
 ```sql
@@ -1830,7 +1830,7 @@ UNION ALL SELECT 'tags',
     (SELECT COUNT(*) FROM public.tags),    
     (SELECT COUNT(*) FROM public.tags) - (SELECT COUNT(*) FROM mssql_import.tags);
 ```
-![[Pasted image 20250609133121.png | 400]]
+![](Pasted_image_20250609133121.png)
 
 Ищу данные, которые остальсь в MS SQL и не перенеслись.
 ```sql
@@ -1905,7 +1905,7 @@ WHERE NOT EXISTS (
 );
 ```
 Проверяю по таблицам остались ли какие-то записи в MS SQL, которых нет в Postgres
-![[Pasted image 20250609131221.png | 500]]
+![](Pasted_image_20250609131221.png)
 Все таблицы вернули 0 - все данные на месте.
 
 
@@ -1943,7 +1943,7 @@ SELECT
 
 ```
 
-![[Pasted image 20250609132217.png | 600]]
+![](Pasted_image_20250609132217.png)
 
 
 #### Размеры мигрированной базы
@@ -1952,36 +1952,36 @@ SELECT
 SELECT current_database() AS database_name,
 ROUND(pg_database_size(current_database()) / 1024.0 / 1024.0, 2) AS total_size_mb
 ```
-![[Pasted image 20250609134740.png | 800]]
+![](Pasted_image_20250609134740.png)
 Перенесенная база с данными, занимает **2011 Мб**, что  более чем в 2 раза меньше базы на MS SQL
 
 Размеры занимаемых таблиц
-![[Pasted image 20250609134708.png | 1000]]
+![](Pasted_image_20250609134708.png)
 
 Напомню, что имели в MS SQL
-![[Pasted image 20250608132612.png]]
+![](Pasted_image_20250608132612.png)
 
 #### Тест приложения после перезда на Postgres сребствами Swagger
 Пробую получить товары из базы Postgres по сребствам Swagger
-![[Pasted image 20250608205735.png | 1000]]
+![](Pasted_image_20250608205735.png)
 Данные приходят успешно.
 
 Создаю новый товар, оставил для тестов  только обязательные свойства в DTO модели которая идет на запись
-![[Pasted image 20250608203930.png | 800]]
+![](Pasted_image_20250608203930.png)
 Получаю успешный ответ
-![[Pasted image 20250608204126.png | 1000]]
+![](Pasted_image_20250608204126.png)
 
 Товар должен быть создан уже в новой базе,
-![[Pasted image 20250608204223.png | 400]]
+![](Pasted_image_20250608204223.png)
 Все верно, их на 1 больше
 
 Найду добавленный продукт в базе:
 ```sql
 select * from public.products where name = 'OTUS'
 ```
-![[Pasted image 20250608204553.png | 900]]
+![](Pasted_image_20250608204553.png)
 Товар в базе, зная его id = 9b3df1a8-4a3f-4461-9db4-d7c66bdd54d5 , попробую удалить
-![[Pasted image 20250608205321.png | 800]]
+![](Pasted_image_20250608205321.png)
 Товар успешно удален, 
 **Смена базы работу сервиса не нарушила, запросы успешно проходят** 
 
@@ -2007,14 +2007,14 @@ OPTIONS (username 'ot_user', password '1');
 В Posgrtes cоздал пользовательское сопоставление.
 
 Скрин с Foreign Data Wrapper
-![[Pasted image 20250608142230.png | 1000]]
+![](Pasted_image_20250608142230.png)
 
 #### Создание внешних таблиц
  ```sql
 CREATE SCHEMA mssql_import;
 ```
 Создал схему для внешних таблиц, на которой далее создаю таблицы в соответствии с таблицами в MS SQL 
-![[Pasted image 20250607224051.png]]
+![](Pasted_image_20250607224051.png)
 
 ```sql
 CREATE FOREIGN TABLE mssql_import.asp_net_roles (
@@ -2037,7 +2037,7 @@ SELECT * FROM public.asp_net_roles
 Перенес даные, проверил что данные целы.
 
 
-![[Pasted image 20250608143157.png | 700]]
+![](Pasted_image_20250608143157.png)
 
 Продолжаю создавать остальные внешние таблицы 
 ```sql
@@ -2113,7 +2113,7 @@ SERVER mssql_server
 OPTIONS (schema_name 'dbo', table_name 'AspNetUserTokens');
 ```
 
-![[Pasted image 20250608144609.png | 1000]]
+![](Pasted_image_20250608144609.png)
 
 И переношу данные в последовательности нарастания зависимостей.
 ```sql
@@ -2144,7 +2144,7 @@ LockoutEnd,
 AccessFailedCount
 FROM mssql_import.asp_net_users 
 ```
-![[Pasted image 20250608145927.png | 600]]
+![](Pasted_image_20250608145927.png | 600)
 Остальные таблицы
 ```sql
 -- AspNetUserClaims
@@ -2160,7 +2160,7 @@ INSERT INTO public.asp_net_user_roles SELECT * FROM mssql_import.asp_net_user_ro
 INSERT INTO public.asp_net_user_tokens SELECT * FROM mssql_import.asp_net_user_tokens;
 ```
 
-![[Pasted image 20250608150445.png | 700]]
+![](Pasted_image_20250608150445.png | 700)
 
 #### Размеры мигрированной базы
 ```sql
@@ -2168,7 +2168,7 @@ SELECT current_database() AS database_name,
 ROUND(pg_database_size(current_database()) / 1024.0 / 1024.0, 2) AS total_size_mb
 ```
 **61.66** что меньше в раза 3  базы на MS SQL
-![[Pasted image 20250608152109.png | 700]]
+![](Pasted_image_20250608152109.png)
 
 Размеры по таблицам:
 ```sql
@@ -2178,10 +2178,10 @@ WHERE schemaname = 'public'
   AND tablename LIKE 'asp_net%'
 ORDER BY tablename;
 ```
-![[Pasted image 20250608152556.png | 800]]
+![](Pasted_image_20250608152556.png)
 
 Напомню, что имели в MS SQL
-![[Pasted image 20250608131204.png]]
+![](Pasted_image_20250608131204.png)
 
 
 И колличество записей:
@@ -2201,7 +2201,7 @@ UNION ALL
 SELECT 'AspNetRoleClaims', COUNT(*) FROM public.asp_net_role_claims
 ORDER BY table_name;
 ```
-![[Pasted image 20250608151702.png | 700]]
+![](Pasted_image_20250608151702.png)
 Что полностю соответствует  колличеству строк в MS SQL
 
 Удаление всех внешних таблиц скопом можно осуществить, удалив схему
@@ -2222,7 +2222,7 @@ WHERE NOT EXISTS (
 );
 ```
 Вернул 0, значит все пользователи на месте
-![[Pasted image 20250608154442.png | 600]]
+![](Pasted_image_20250608154442.png)
 
 И аналогично для остальных таблиц:
 ```sql
@@ -2291,7 +2291,7 @@ SELECT
     (SELECT COUNT(DISTINCT (user_id, role_id)) FROM public.asp_net_user_roles) - 
     (SELECT COUNT(DISTINCT (UserId, RoleId)) FROM mssql_import.asp_net_user_roles) AS pairs_difference;
 ```
-![[Pasted image 20250608153920.png | 900]]
+![](Pasted_image_20250608153920.png)
 Проблем не обнаружено.
 
 ## Аналогично выполняем перенос данных и проверки для других баз, далее проводим интеграционные тесты уже в самих тестах.
