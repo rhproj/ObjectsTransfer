@@ -287,6 +287,9 @@ protected override void Up(MigrationBuilder migrationBuilder)
 ```
 
 При этом существующие фалы EF-миграций под MS SQL сначало удалил и пересоздал новые под Postgres:
+```shell
+dotnet ef migrations add PostgresInitial #команда EF для создания миграционных файлов
+```
 ![](Pasted_image_20250609123246.png)
 Коротко о файлах EF-миграций:
 - **`20250531191315_PostgesInitial.cs`**  основной файл миграции - инструкциями "что нужно сделать с базой"
